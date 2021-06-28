@@ -1,0 +1,196 @@
+{% extends 'base_main.html' %}
+{% load static %}
+
+{% block ext_css %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div id="wrapper">
+        {% block header %}
+            {{ block.super }}
+        {% endblock %}
+
+        <section id="inner-headline">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 class="pageTitle">定制服务</h2>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="content">
+            <div class="container content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div><h2>服务质量</h2>公司秉承为用户创造价值的理念，不断推出面向高清视频的应用系统，并且为用户定制基于微信平台的各种航拍业务的预定、收费这一重要的创新性服务。</div>
+                        <br>
+                    </div>
+                </div>
+                <!-- Service Blcoks -->
+                <div class="row service-v1 margin-bottom-40">
+                    <div class="col-md-4 md-margin-bottom-40">
+                        <img src="{% static 'img/service1.jpg' %}" alt="" width="700" height="600"
+                             class="img-responsive">
+                        <h3>经营范围</h3>
+                        <p>
+                            计算机信息技术研发、技术咨询；软件开发与销售；物联网技术研发；开发、销售计算机软硬件；计算机系统集成；网络工程设计及施工（凭资质许可证经营）；销售办公设备、安防产品（国家有专项规定的除外）、电子元器件。</p>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="{% static 'img/service2.jpg' %}" alt="" width="700" height="600"
+                             class="img-responsive">
+                        <h3>产品研发</h3>
+                        <p>我公司从事智能交通的违规检测系统的开发和研究，为广大的交通安保提供特制的设备器材，并且为用户定制基于微信平台的各种航拍业务。 </p>
+                    </div>
+                    <div class="col-md-4 md-margin-bottom-40">
+                        <img class="img-responsive" src="{% static 'img/service3.jpg' %}" alt="">
+                        <h3>合作伙伴</h3>
+                        <p>
+                            我公司与成都多家软件科技有限公司保持着紧密的合作，该公司是中国领先的智能交通视频产品供应商，专业从事视频产品的研究、设计、生产、销售、服务为一体的现代化密集型高新技术企业。公司位于成都市武侯区西部智谷科技园A区，是一家拥有自主知识产权的高科技软件企业</p>
+                    </div>
+                </div>
+                <!-- End Service Blcoks -->
+                <hr class="margin-bottom-50">
+
+                <!-- Info Blcoks -->
+                <div class="row">
+                    <div class="col-sm-4 info-blocks">
+                        <i class="icon-info-blocks fa fa-user"></i>
+                        <div class="info-blocks-in">
+                            <h3>技术研发、技术咨询</h3>
+                            <p>为您的产品提供专业解答</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 info-blocks">
+                        <i class="icon-info-blocks fa fa-star"></i>
+                        <div class="info-blocks-in">
+                            <h3>软件开发销售</h3>
+                            <p>提供优质的app软件</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 info-blocks">
+                        <i class="icon-info-blocks fa fa-book"></i>
+                        <div class="info-blocks-in">
+                            <h3>网络工程设计</h3>
+                            <p>为您的质量保驾护航</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Info Blcoks -->
+
+                <!-- Info Blcoks -->
+                <div class="row">
+                    <div class="col-sm-4 info-blocks">
+                        <i class="icon-info-blocks fa fa-home"></i>
+                        <div class="info-blocks-in">
+                            <h3>办公设备</h3>
+                            <p>让您享受优质办公</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 info-blocks">
+                        <i class="icon-info-blocks fa fa-flag-o"></i>
+                        <div class="info-blocks-in">
+                            <h3>安防产品</h3>
+                            <p>免除您的后顾之忧</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 info-blocks">
+                        <i class="icon-info-blocks fa fa-thumbs-o-up"></i>
+                        <div class="info-blocks-in">
+                            <h3>电子元器件</h3>
+                            <p>便宜实惠</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Info Blcoks -->
+            </div>
+        </section>
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">联系我们</h5>
+                            <address>
+                                {{ ADDRESS }}<br>
+                                {{ COUNTRY }} {{ PROVINCE }}
+                            </address>
+                            <p>
+                                <i class="icon-phone"></i> {{ CONTACT_PHONE }} <br>
+                                <i class="icon-envelope-alt"></i> {{ CONTACT_EMAIL }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">我们的团队</h5>
+                            <ul class="link-list">
+                                {% for member in members %}
+                                    <li><a href="#">{{ member }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">产品服务</h5>
+                            <ul class="link-list">
+                                <li><a href="{% url 'app:services' %}">定制服务</a></li>
+                                <li><a href="{% url 'app:portfolio' %}">安防产品</a></li>
+                                <li><a href="{% url 'app:portfolio' %}">智能交通检测产品</a></li>
+                                <li><a href="{% url 'app:portfolio' %}">智能交通的违规检测系统</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">文化理念</h5>
+                            <ul class="link-list">
+                                <li><a href="{% url 'app:about' %}">创新为魂</a></li>
+                                <li><a href="{% url 'app:about' %}">专注为本</a></li>
+                                <li><a href="{% url 'app:about' %}">企业要专注，员工要专心。</a></li>
+                                <li><a href="{% url 'app:about' %}">体现在做事上是专业，个人成长上是成为专家。</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="sub-footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="copyright">
+                                <p>
+                                <li><a href="{% url 'app:index' %}">{{ COMPANY_NAME }}</a></li>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ul class="social-network">
+                                <li><a href="#" data-placement="top" title="Facebook"><i class="fa fa-facebook"></i></a>
+                                </li>
+                                <li><a href="#" data-placement="top" title="Twitter"><i class="fa fa-twitter"></i></a>
+                                </li>
+                                <li><a href="#" data-placement="top" title="Linkedin"><i class="fa fa-linkedin"></i></a>
+                                </li>
+                                <li><a href="#" data-placement="top" title="Pinterest"><i
+                                        class="fa fa-pinterest"></i></a></li>
+                                <li><a href="#" data-placement="top" title="Google plus"><i
+                                        class="fa fa-google-plus"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
+
+{% endblock %}
+
+{% block ext_js %}
+    {{ block.super }}
+{% endblock %}

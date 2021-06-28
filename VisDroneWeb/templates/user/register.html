@@ -1,0 +1,92 @@
+{% extends 'base_user.html' %}
+{% load static %}
+
+{% block ext_css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'user/css/register.css' %}">
+{% endblock %}
+
+{% block ext_js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'user/js/register.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    {{ block.super }}
+
+{% endblock %}
+
+{% block content_inner %}
+    <div class="content">
+        <div class="container">
+            <div class="col-md-4 col-sm-6 col-md-offset-4 col-sm-offset-3">
+                <form method="post" enctype="multipart/form-data" action="{% url 'app:register' %}"
+                      onsubmit="return check()">
+
+                    {% csrf_token %}
+
+                    <div class="card card-login animate flipInX">
+                        <div class="card-content">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="material-icons">person</i></span>
+                                <div class="form-group label-floating is-empty">
+                                    <label class="control-label">User name</label>
+                                    <input type="text" name="username" id="username_input"
+                                           class="form-control" style="cursor: auto;">
+                                    <span class="material-input"></span>
+                                    <span id="username_info"></span>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="material-icons">email</i></span>
+                                <div class="form-group label-floating is-empty">
+                                    <label class="control-label">Email address</label>
+                                    <input type="text" name="email" id="email_input"
+                                           class="form-control" style="cursor: auto;">
+                                    <span class="material-input"></span>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                        <span class="input-group-addon"><i
+                                                class="material-icons">lock_outline</i></span>
+                                <div class="form-group label-floating is-empty">
+                                    <label class="control-label">Password</label>
+                                    <input type="password" name="password" id="password_input"
+                                           class="form-control" style="cursor: auto;">
+                                    <span class="material-input"></span>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                        <span class="input-group-addon"><i
+                                                class="material-icons">lock_outline</i></span>
+                                <div class="form-group label-floating is-empty">
+                                    <label class="control-label">Password confirm</label>
+                                    <input type="password" name="password_confirm" id="password_confirm_input"
+                                           class="form-control" style="cursor: auto;">
+                                    <span id="password_info"></span>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                        <span class="input-group-addon"><i
+                                                class="material-icons">image</i></span>
+                                <div class="card card-profile">
+                                    <input type="file" name="icon" id="icon_input"
+                                           class="form-control" style="cursor: auto;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer text-center">
+                            <button type="submit" id="register" class="btn btn-rose btn-simple btn-wd btn-lg">
+                                Success
+                            </button>
+                        </div>
+                        <div class="text-right">
+                            <a class="" href="{% url 'app:login' %}"
+                               id="haveUser"><span>Have user &nbsp;&nbsp;</span></a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

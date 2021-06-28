@@ -1,0 +1,280 @@
+{% extends 'base_main.html' %}
+{% load static %}
+
+{% block ext_css %}
+    {{ block.super }}
+    <link rel="script" href="{% static 'main/css/magnific-popup.css' %}">
+    <link rel="script" href="{% static 'main/css/gallery-1.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div id="wrapper">
+        {% block header %}
+            {{ block.super }}
+        {% endblock %}
+
+        <section id="inner-headline">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 class="pageTitle">产品服务</h2>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div><h2>设备浏览</h2>我公司为广大的用户提供质量良好的各种安防产品，智能交通检测产品、智能交通违规检测系统、景区航拍系统等一系列的产品</div>
+                        <br>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <!-- Start Gallery 1-2 -->
+                        <section id="gallery-1" class="content-block section-wrapper gallery-1">
+                            <div class="container">
+
+                                <div class="editContent">
+                                    <ul class="filter">
+                                        <li class="active"><a href="#" data-filter="*">全部</a></li>
+                                        <li><a href="#" data-filter=".artwork">景区航拍</a></li>
+                                        <li><a href="#" data-filter=".creative">监控设备</a></li>
+                                        <li><a href="#" data-filter=".nature">违章检测</a></li>
+                                        <li><a href="#" data-filter=".outside">车保设备</a></li>
+                                        <li><a href="#" data-filter=".photography">电子元件</a></li>
+                                    </ul>
+                                </div>
+                                <!-- /.gallery-filter -->
+
+                                <div class="row">
+                                    <div id="isotope-gallery-container">
+                                        <div class="col-md-4 col-sm-6 col-xs-12 gallery-item-wrapper artwork creative">
+                                            <div class="gallery-item">
+                                                <div class="gallery-thumb">
+                                                    <img src="{% static 'img/works/1.jpg' %}" alt="1st gallery Thumb" width="429"
+                                                         height="272" class="img-responsive">
+                                                    <div class="image-overlay"></div>
+                                                    <a href="{% static 'img/works/1.jpg' %}" class="gallery-zoom"><i
+                                                            class="fa fa-eye"></i></a>
+                                                    <a href="#" class="gallery-link"><i class="fa fa-link"></i></a>
+                                                </div>
+                                                <div class="gallery-details">
+                                                    <div class="editContent">
+                                                        <h5>驾驶员违规检测</h5>
+                                                    </div>
+                                                    <div class="editContent">
+                                                        <p>保障乘客和司机的生命安全</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /.gallery-item-wrapper -->
+                                        <div class="col-md-4 col-sm-6 col-xs-12 gallery-item-wrapper nature outside">
+                                            <div class="gallery-item">
+                                                <div class="gallery-thumb">
+                                                    <img src="{% static 'img/works/2.jpg' %}" class="img-responsive"
+                                                         alt="2nd gallery Thumb">
+                                                    <div class="image-overlay"></div>
+                                                    <a href="{% static 'img/works/2.jpg' %}" class="gallery-zoom"><i
+                                                            class="fa fa-eye"></i></a>
+                                                    <a href="#" class="gallery-link"><i class="fa fa-link"></i></a>
+                                                </div>
+                                                <div class="gallery-details">
+                                                    <div class="editContent">
+                                                        <h5>车辆安全保障设备</h5>
+                                                    </div>
+                                                    <div class="editContent">
+                                                        <p>让您出行无忧，无忧出行</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /.gallery-item-wrapper -->
+                                        <div class="col-md-4 col-sm-6 col-xs-12 gallery-item-wrapper photography artwork">
+                                            <div class="gallery-item">
+                                                <div class="gallery-thumb">
+                                                    <img src="{% static 'img/works/3.jpg' %}" class="img-responsive"
+                                                         alt="3rd gallery Thumb">
+                                                    <div class="image-overlay"></div>
+                                                    <a href="{% static 'img/works/3.jpg' %}" class="gallery-zoom"><i
+                                                            class="fa fa-eye"></i></a>
+                                                    <a href="#" class="gallery-link"><i class="fa fa-link"></i></a>
+                                                </div>
+                                                <div class="gallery-details">
+                                                    <div class="editContent">
+                                                        <h5>电子元件</h5>
+                                                    </div>
+                                                    <div class="editContent">
+                                                        <p>让您的制作更为方便简捷</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /.gallery-item-wrapper -->
+                                        <div class="col-md-4 col-sm-6 col-xs-12 gallery-item-wrapper creative nature">
+                                            <div class="gallery-item">
+                                                <div class="gallery-thumb">
+                                                    <img src="{% static 'img/works/4.jpg' %}" class="img-responsive"
+                                                         alt="4th gallery Thumb">
+                                                    <div class="image-overlay"></div>
+                                                    <a href="{% static 'img/works/4.jpg' %}" class="gallery-zoom"><i
+                                                            class="fa fa-eye"></i></a>
+                                                    <a href="#" class="gallery-link"><i class="fa fa-link"></i></a>
+                                                </div>
+                                                <div class="gallery-details">
+                                                    <div class="editContent">
+                                                        <h5>监控设备</h5>
+                                                    </div>
+                                                    <div class="editContent">
+                                                        <p>保证您公司的财产及员工的安全</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /.gallery-item-wrapper -->
+                                        <div class="col-md-4 col-sm-6 col-xs-12 gallery-item-wrapper nature">
+                                            <div class="gallery-item">
+                                                <div class="gallery-thumb">
+                                                    <img src="{% static 'img/works/5.jpg' %}" alt="5th gallery Thumb"
+                                                         class="img-responsive">
+                                                    <div class="image-overlay"></div>
+                                                    <a href="{% static 'img/works/5.jpg' %}" class="gallery-zoom"><i
+                                                            class="fa fa-eye"></i></a>
+                                                    <a href="#" class="gallery-link"><i class="fa fa-link"></i></a>
+                                                </div>
+                                                <div class="gallery-details">
+                                                    <div class="editContent">
+                                                        <h5>违章检测系统</h5>
+                                                    </div>
+                                                    <div class="editContent">
+                                                        <p>让驾驶充满安全</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /.gallery-item-wrapper -->
+                                        <div class="col-md-4 col-sm-6 col-xs-12 gallery-item-wrapper artwork creative">
+                                            <div class="gallery-item">
+                                                <div class="gallery-thumb">
+                                                    <img src="{% static 'img/works/6.jpg' %}" class="img-responsive"
+                                                         alt="6th gallery Thumb">
+                                                    <div class="image-overlay"></div>
+                                                    <a href="{% static 'img/works/6.jpg' %}" class="gallery-zoom"><i
+                                                            class="fa fa-eye"></i></a>
+                                                    <a href="#" class="gallery-link"><i class="fa fa-link"></i></a>
+                                                </div>
+                                                <div class="gallery-details">
+                                                    <div class="editContent">
+                                                        <h5>景区航拍系统</h5>
+                                                    </div>
+                                                    <div class="editContent">
+                                                        <p>让您的照片与众不同</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <!-- /.isotope-gallery-container -->
+                                </div>
+                                <!-- /.row -->
+                                <!-- /.container -->
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">联系我们</h5>
+                            <address>
+                                {{ ADDRESS }}<br>
+                                {{ COUNTRY }} {{ PROVINCE }}
+                            </address>
+                            <p>
+                                <i class="icon-phone"></i> {{ CONTACT_PHONE }} <br>
+                                <i class="icon-envelope-alt"></i> {{ CONTACT_EMAIL}}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">我们的团队</h5>
+                            <ul class="link-list">
+                                <li><a href="{% url 'app:about' %}">年轻</a></li>
+                                <li><a href="{% url 'app:about' %}">充满活力</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">产品服务</h5>
+                            <ul class="link-list">
+                                <li><a href="{% url 'app:services' %}">定制服务</a></li>
+                                <li><a href="{% url 'app:portfolio' %}">安防产品</a></li>
+                                <li><a href="{% url 'app:portfolio' %}">智能交通检测产品</a></li>
+                                <li><a href="{% url 'app:portfolio' %}">智能交通的违规检测系统</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">文化理念</h5>
+                            <ul class="link-list">
+                                <li><a href="{% url 'app:about' %}">创新为魂</a></li>
+                                <li><a href="{% url 'app:about' %}">专注为本</a></li>
+                                <li><a href="{% url 'app:about' %}">企业要专注，员工要专心。</a></li>
+                                <li><a href="{% url 'app:about' %}">体现在做事上是专业，个人成长上是成为专家。</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="sub-footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="copyright">
+                                <p>
+                                <li><a href="{% url 'app:index' %}">{{ COMPANY_NAME }}</a></li>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ul class="social-network">
+                                <li><a href="#" data-placement="top" title="Facebook"><i class="fa fa-facebook"></i></a>
+                                </li>
+                                <li><a href="#" data-placement="top" title="Twitter"><i class="fa fa-twitter"></i></a>
+                                </li>
+                                <li><a href="#" data-placement="top" title="Linkedin"><i class="fa fa-linkedin"></i></a>
+                                </li>
+                                <li><a href="#" data-placement="top" title="Pinterest"><i
+                                        class="fa fa-pinterest"></i></a></li>
+                                <li><a href="#" data-placement="top" title="Google plus"><i
+                                        class="fa fa-google-plus"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+    <a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
+
+{% endblock %}
+
+{% block ext_js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'main/js/jquery.isotope.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'main/js/jquery.magnific-popup.min.js' %}"></script>
+
+{% endblock %}

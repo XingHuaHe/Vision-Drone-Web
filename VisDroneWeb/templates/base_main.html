@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block ext_css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'main/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'main/css/fancybox/jquery.fancybox.css' %}">
+    <link rel="stylesheet" href="{% static 'main/simple-line-icons/css/simple-line-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'main/css/flexslider.css' %}">
+{% endblock %}
+
+{% block ext_js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'main/js/jquery.easing.1.3.js' %}"></script>
+    <script type="text/javascript" src="{% static 'main/js/jquery.fancybox.pack.js' %}"></script>
+    <script type="text/javascript" src="{% static 'main/js/jquery.fancybox-media.js' %}"></script>
+    <script type="text/javascript" src="{% static 'main/js/quicksand/jquery.quicksand.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'main/js/jquery.flexslider.js' %}"></script>
+    <script type="text/javascript" src="{% static 'main/js/portfolio/setting.js' %}"></script>
+    <script type="text/javascript" src="{% static 'main/js/animate.js' %}"></script>
+    <script type="text/javascript" src="{% static 'main/js/custom.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    {% block header %}
+        <header>
+            <div class="navbar navbar-default navbar-static-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse"
+                                data-target=".navbar-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="{% url 'app:index' %}"><img src="{% static 'img/logo.png' %}"
+                                                                                  alt="logo"/></a>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="active"><a href="{% url 'app:index' %}">首页</a></li>
+                            <li class="dropdown">
+                                <a href="#" data-toggle="dropdown" class="dropdown-toggle">关于我们 <b
+                                        class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{% url 'app:about' %}">公司简介</a></li>
+                                    <li><a href="{% url 'app:about' %}">我们的团队</a></li>
+                                    <li><a href="{% url 'app:contact' %}">联系我们</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="{% url 'app:services' %}">定制服务</a></li>
+                            <li><a href="{% url 'app:portfolio' %}">产品服务</a></li>
+                            <li><a href="{% url 'app:recruit' %}">招贤纳士</a></li>
+                            <li><a href="{% url 'app:contact' %}">联系我们</a></li>
+                            {% if is_login %}
+                                <li class="dropdown">
+                                    <a href="#" data-toggle="dropdown" class="dropdown-toggle"><i
+                                            class="material-icons">person</i>{{ username }}</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#"><i class="material-icons">person</i>个人信息</a></li>
+                                        <li><a href="#">设置</a></li>
+                                        <li><a href="{% url 'app:logout' %}">注销</a></li>
+                                    </ul>
+                                </li>
+                            {% else %}
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li class="active">
+                                        <a href="{% url 'app:login' %}"><i class="material-icons">person</i> 未登录</a>
+                                    </li>
+                                </ul>
+                                {#<a href="{% url 'app:login' %}"><img src="{% static 'img/111.png' %}"> 未登录 </a>#}
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+    {% endblock %}
+{% endblock %}

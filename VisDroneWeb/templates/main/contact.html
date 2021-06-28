@@ -1,0 +1,203 @@
+{% extends 'base_main.html' %}
+{% load static %}
+
+{% block ext_css %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div id="wrapper">
+        {% block header %}
+            {{ block.super }}
+        {% endblock %}
+
+        <section id="inner-headline">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 class="pageTitle">联系我们</h2>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <br>
+        <table width="900" height="324" border="0" align="center">
+            <tr>
+                <td width="77" height="320"><h3><img src="{% static 'img/slides/d1.png' %}" width="70" height="70"></h3>
+                    <p><img src="{% static 'img/slides/d2.png' %}" width="70" height="70"></p>
+                    <p><img src="{% static 'img/slides/d3.png' %}" width="70" height="70"></p></td>
+                <td width="352"><h3>公司地址</h3>
+                    <p>{{ ADDRESS }}</p>
+                    <h3>联系邮箱</h3>
+                    <p>{{ CONTACT_EMAIL }}</p>
+                    <h3>联系电话</h3>
+                    <p>{{ CONTACT_PHONE }}</p></td>
+                <td width="457">
+                    <iframe src="{% url 'app:map' %}" width="457" height="324" frameborder="0" scrolling="No"></iframe>&nbsp;
+                </td>
+            </tr>
+        </table>
+
+        <p>&nbsp;</p>
+        <section id="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div><h2></h2>
+                            如果您对我们公司还有什么疑问，可以拨打电话 {{ CONTACT_PHONE }} 或者在下方进行留言，我们会尽快对留言进行答复<br>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <!-- Form itself -->
+                        <form name="sentMessage" id="contactForm" novalidate>
+                            <h3>在线留言</h3>
+                            <div class="control-group">
+                                <div class="controls">
+                                    <input type="text" class="form-control"
+                                           placeholder="Full Name" id="name" required
+                                           data-validation-required-message="Please enter your name"/>
+                                    <p class="help-block"></p>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="controls">
+                                    <input type="email" class="form-control" placeholder="Email"
+                                           id="email" required
+                                           data-validation-required-message="Please enter your email"/>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <div class="controls">
+				                    <textarea rows="10" cols="100" class="form-control"
+                                              placeholder="Message" id="message" required
+                                              data-validation-required-message="Please enter your message" minlength="5"
+                                              data-validation-minlength-message="Min 5 characters"
+                                              maxlength="999" style="resize:none">
+                                    </textarea>
+                                </div>
+                            </div>
+                            <div id="success"></div> <!-- For success/fail messages -->
+                            <button type="submit" class="btn btn-primary pull-right">Send</button>
+                            <br/>
+                        </form>
+                    </div>
+                    <div class="col-md-offset-1 col-md-6">
+                        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+                        <div style="overflow:hidden;height:500px;width:600px;">
+                            <div id="gmap_canvas" style="height:500px;width:600px;"></div>
+                            <style>#gmap_canvas img {
+                                max-width: none !important;
+                                background: none !important
+                            }</style>
+                            <a class="google-map-code" href="http://www.trivoo.net" id="get-map-data">trivoo</a></div>
+                        <script type="text/javascript"> function init_map() {
+                            var myOptions = {
+                                zoom: 14,
+                                center: new google.maps.LatLng(40.805478, -73.96522499999998),
+                                mapTypeId: google.maps.MapTypeId.ROADMAP
+                            };
+                            map = new google.maps.Map(document.getElementById("gmap_canvas"), myOptions);
+                            marker = new google.maps.Marker({
+                                map: map,
+                                position: new google.maps.LatLng(40.805478, -73.96522499999998)
+                            });
+                            infowindow = new google.maps.InfoWindow({content: "<b>The Breslin</b><br/>2880 Broadway<br/> New York"});
+                            google.maps.event.addListener(marker, "click", function () {
+                                infowindow.open(map, marker);
+                            });
+                            infowindow.open(map, marker);
+                        }
+
+                        google.maps.event.addDomListener(window, 'load', init_map);</script>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">联系我们</h5>
+                            <address>
+                                {{ ADDRESS }}<br>
+                                {{ COUNTRY }} {{ PROVINCE }}
+                            </address>
+                            <p>
+                                <i class="icon-phone"></i>{{ CONTACT_PHONE }}<br>
+                                <i class="icon-envelope-alt"></i>{{ CONTACT_EMAIL }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">我们的团队</h5>
+                            <ul class="link-list">
+                                <li><a href="{% url 'app:about' %}">年轻</a></li>
+                                <li><a href="{% url 'app:about' %}">充满活力</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">产品服务</h5>
+                            <ul class="link-list">
+                                <li><a href="{% url 'app:services' %}">定制服务</a></li>
+                                <li><a href="{% url 'app:portfolio' %}">安防产品</a></li>
+                                <li><a href="{% url 'app:portfolio' %}">智能交通检测产品</a></li>
+                                <li><a href="{% url 'app:portfolio' %}">智能交通的违规检测系统</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">文化理念</h5>
+                            <ul class="link-list">
+                                <li><a href="{% url 'app:about' %}">创新为魂</a></li>
+                                <li><a href="{% url 'app:about' %}">专注为本</a></li>
+                                <li><a href="{% url 'app:about' %}">企业要专注，员工要专心。</a></li>
+                                <li><a href="{% url 'app:about' %}">体现在做事上是专业，个人成长上是成为专家。</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="sub-footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="copyright">
+                                <p>
+                                <li><a href="{% url 'app:index' %}">{{ COMPANY_NAME }}</a></li>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ul class="social-network">
+                                <li><a href="#" data-placement="top" title="Facebook"><i class="fa fa-facebook"></i></a>
+                                </li>
+                                <li><a href="#" data-placement="top" title="Twitter"><i class="fa fa-twitter"></i></a>
+                                </li>
+                                <li><a href="#" data-placement="top" title="Linkedin"><i class="fa fa-linkedin"></i></a>
+                                </li>
+                                <li><a href="#" data-placement="top" title="Pinterest"><i
+                                        class="fa fa-pinterest"></i></a></li>
+                                <li><a href="#" data-placement="top" title="Google plus"><i
+                                        class="fa fa-google-plus"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
+{% endblock %}
+
+{% block ext_js %}
+    {{ block.super }}
+{% endblock %}

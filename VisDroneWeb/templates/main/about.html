@@ -1,0 +1,141 @@
+{% extends 'base_main.html' %}
+{% load static %}
+
+{% block ext_css %}
+    {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+    <div id="wrapper">
+        {% block header %}
+            {{ block.super }}
+        {% endblock %}
+
+        <section id="inner-headline">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 class="pageTitle">关于我们</h2>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="content">
+            <div class="container">
+                <div class="about">
+                    <section class="features">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div><h2>{{ COMPANY_NAME }}</h2>
+                                        公司成立于2012年，是一家研发和销售以智能安防系统产品和智能交通产品为基础，并为用户提供基于微信平台的定制航拍业务的预定、收费等管理系统的计算机软件研发公司。可提供在安防和交通领域的整体智能视频解决方案，是一家拥有自主知识产权的高科技软件企业。长期专注于智能视频产品及解决方案的研发和运营。拥有一支多年从事智能视频分析与图形图像识别的研发团队。近期，大力开展航拍业务的预定、收费管理系统的定制服务。
+                                    </div>
+                                    <br>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div><h2>经营范围</h2>
+                                        计算机信息技术研发、技术咨询；软件开发与销售；物联网技术研发；开发、销售计算机软硬件；计算机系统集成；网络工程设计及施工（凭资质许可证经营）；销售办公设备、安防产品（国家有专项规定的除外）、电子元器件。
+                                    </div>
+                                    <br>
+                                </div>
+                            </div>
+                            <div class="block-heading-six">
+                                <h2 class="bg-color">我们的团队 年轻、充满活力</h2>
+                            </div>
+                            <br>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">联系我们</h5>
+                            <address>
+                                {{ ADDRESS }}<br>
+                                {{ COUNTRY }} {{ PROVINCE }}
+                            </address>
+                            <p>
+                                <i class="icon-phone"></i>{{ CONTACT_PHONE }}<br>
+                                <i class="icon-envelope-alt"></i>{{ CONTACT_EMAIL }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">我们的团队</h5>
+                            <ul class="link-list">
+                                <li><a href="{% url 'app:about' %}">年轻</a></li>
+                                <li><a href="{% url 'app:about' %}">充满活力</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">产品服务</h5>
+                            <ul class="link-list">
+                                <li><a href="{% url 'app:services' %}">定制服务</a></li>
+                                <li><a href="{% url 'app:portfolio' %}">安防产品</a></li>
+                                <li><a href="{% url 'app:portfolio' %}">智能交通检测产品</a></li>
+                                <li><a href="{% url 'app:portfolio' %}">智能交通的违规检测系统</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="widget">
+                            <h5 class="widgetheading">文化理念</h5>
+                            <ul class="link-list">
+                                <li><a href="{% url 'app:about' %}">创新为魂</a></li>
+                                <li><a href="{% url 'app:about' %}">专注为本</a></li>
+                                <li><a href="{% url 'app:about' %}">企业要专注，员工要专心。</a></li>
+                                <li><a href="{% url 'app:about' %}">体现在做事上是专业，个人成长上是成为专家。</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="sub-footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="copyright">
+                                <p>
+                                <li><a href="{% url 'app:index' %}">{{ COMPANY_NAME }}</a></li>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ul class="social-network">
+                                <li><a href="#" data-placement="top" title="Facebook"><i class="fa fa-facebook"></i></a>
+                                </li>
+                                <li><a href="#" data-placement="top" title="Twitter"><i class="fa fa-twitter"></i></a>
+                                </li>
+                                <li><a href="#" data-placement="top" title="Linkedin"><i class="fa fa-linkedin"></i></a>
+                                </li>
+                                <li><a href="#" data-placement="top" title="Pinterest"><i
+                                        class="fa fa-pinterest"></i></a></li>
+                                <li><a href="#" data-placement="top" title="Google plus"><i
+                                        class="fa fa-google-plus"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
+
+{% endblock %}
+
+{% block ext_js %}
+    {{ block.super }}
+
+{% endblock %}
