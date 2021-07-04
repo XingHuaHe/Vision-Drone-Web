@@ -21,5 +21,5 @@ urlpatterns = [
 
     url(r'^app/', include('App.urls', namespace='app')),
 
-    url(r'^api/', include('Api.urls', namespace='api')),
+    url(r'^modelsApi/', include('ModelsApi.urls', namespace='modelsApi')),
 ]
