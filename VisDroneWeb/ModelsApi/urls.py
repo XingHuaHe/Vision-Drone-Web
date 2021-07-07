@@ -8,5 +8,6 @@ urlpatterns = [
     # model checkpoint manager
     url(r'^checkpointManagement/', views.CheckpointManagement.as_view(), name='checkpointManagement'),
 
-    # url(r'^instructions', views.Instruction.as_view(), name='instructions'),
+    # detect object
+    url(r'^detectionManagement/', views.DetectionManagement.as_view(), name='detectionManagement')
 ]

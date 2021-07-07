@@ -139,3 +139,5 @@ STATICFILES_DIRS = [
 MEDIA_KEY_PREFIX = "/static/uploads/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/uploads')
+
+IMG_UPLOAD = os.path.join(BASE_DIR, 'static/uploads/images')
