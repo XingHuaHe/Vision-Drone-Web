@@ -2,6 +2,8 @@ from django.db import models
 
 
 class NetModel(models.Model):
+    """model config model"""
+
     nm_number = models.CharField(max_length=64, unique=True)
     nm_name = models.CharField(max_length=64)
     nm_time = models.DateTimeField(verbose_name='YYYY-MM-DD HH:MM:ss')
@@ -12,6 +14,8 @@ class NetModel(models.Model):
 
 
 class Checkpoint(models.Model):
+    """model checkpoint model"""
+
     ck_number = models.CharField(max_length=64, unique=True)
     ck_time = models.DateTimeField(verbose_name='YYYY-MM-DD HH:MM:ss')
     ck_path = models.FileField(upload_to='checkpoint')
@@ -19,3 +23,13 @@ class Checkpoint(models.Model):
 
     class Meta:
         db_table = 'VisDrone_Checkpoint'
+
+
+class ClassName(models.Model):
+    """detected class names"""
+
+    cn_number = models.CharField(max_length=64, unique=True)
+    cn_name = models.CharField(max_length=64)
+
+    class Meta:
+        db_table = 'VisDrone_ClassName'

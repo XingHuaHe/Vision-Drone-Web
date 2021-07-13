@@ -3,8 +3,10 @@ import math
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
-from mish_cuda import MishCuda as Mish
+# from mish_cuda import MishCuda as Mish
+from ..utils.layers import Mish
 
 
 def autopad(k, p=None):  # kernel, padding

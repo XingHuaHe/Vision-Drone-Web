@@ -1,19 +1,16 @@
-import argparse
 import os
-import platform
-import shutil
-import time
+import argparse
 from pathlib import Path
+from typing import List, Dict
 
 import cv2
+from numpy import random
 import torch
 import torch.backends.cudnn as cudnn
-from numpy import random
 
-from models.experimental import attempt_load
+from utils.models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
-from utils.general import (
-    check_img_size, non_max_suppression, apply_classifier, scale_coords, xyxy2xywh, plot_one_box, strip_optimizer)
+from utils.general import (check_img_size, non_max_suppression, apply_classifier, scale_coords, xyxy2xywh, plot_one_box, strip_optimizer)
 from utils.torch_utils import select_device, load_classifier, time_synchronized
 
 from models.models import *
@@ -22,193 +19,124 @@ from utils.datasets import *
 from utils.general import *
 
 
-def load_classes(path):
+def load_classes(path: str) -> List:
     # Loads *.names file at 'path'
     with open(path, 'r') as f:
         names = f.read().split('\n')
     return list(filter(None, names))  # filter removes empty strings (such as last line)
 
 
-def detect(save_img=False):
-    out, source, weights, view_img, save_txt, imgsz, cfg, names = \
-        opt.output, opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size, opt.cfg, opt.names
-    webcam = source == '0' or source.startswith('rtsp') or source.startswith('http') or source.endswith('.txt')
+#     parser.add_argument('--weights', nargs='+', type=str, default='./weights/last_prune_0593.pt',
+#                         help='model.pt path(s)')
+#     parser.add_argument('--cfg', type=str, default='./cfg/295_sparsity_5_prune_0.5_0.5.cfg', help='*.cfg path')
+#     parser.add_argument('--output', type=str, default='./output', help='output folder')  # output folder
+#     parser.add_argument('--names', type=str, default='data/visDrone.names', help='*.cfg path')
+#     parser.add_argument('--img-size', type=int, default=608, help='inference size (pixels)')
+#     parser.add_argument('--conf-thres', type=float, default=0.1, help='object confidence threshold')
+#     parser.add_argument('--iou-thres', type=float, default=0.1, help='IOU threshold for NMS')
+#     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
+#     parser.add_argument('--view-img', action='store_true', help='display results')
+#     parser.add_argument('--save-txt', default=True, type=bool, help='save results to *.txt')
+#     parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 0 2 3')
+#     parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
+#     parser.add_argument('--augment', action='store_true', help='augmented inference')
+#     parser.add_argument('--update', action='store_true', help='update all models')
 
-    # Initialize
-    device = select_device(opt.device)
-    # if os.path.exists(out):
-    # shutil.rmtree(out)  # delete output folder
-    # os.makedirs(out)  # make new output folder
-    os.makedirs(out, exist_ok=True)
-    half = device.type != 'cpu'  # half precision only supported on CUDA
+def detect(cfg, weight, names: str, img_path, classes: int, augment: bool = False, agnostic_nms: bool = False, device: str = '',
+           img_size: int = 608, conf_thres: int = 0.1, iou_thres: int = 0.1,
+           save_img: bool = True, webcam: bool = False) -> Dict:
+           
+    # select device (cpu or cuda)
+    device = select_device(device)
+
+    # half precision only supported on CUDA
+    half = device.type != 'cpu'
 
     # Load model
-    model = Darknet(cfg, imgsz).cuda()
+    model = Darknet(cfg, img_size).to(device)
+
+    # load state dict.
     try:
-        state_dict = torch.load(weights, map_location=device)['model']
+        state_dict = torch.load(weight, map_location=device)['model']
         model.load_state_dict(state_dict)
-        # model.load_state_dict(torch.load(weights, map_location=device))
-    except:
-        # load_darknet_weights(model, weights[0])
-        model.load_state_dict(torch.load(weights, map_location=device))
-    # model = attempt_load(weights, map_location=device)  # load FP32 model
-    # imgsz = check_img_size(imgsz, s=model.stride.max())  # check img_size
+    except TypeError as e:
+        model.load_state_dict(torch.load(weight, map_location=device))
+
     model.to(device).eval()
     if half:
         model.half()  # to FP16
 
-    # Second-stage classifier
-    classify = False
-    if classify:
-        modelc = load_classifier(name='resnet101', n=2)  # initialize
-        modelc.load_state_dict(torch.load('weights/resnet101.pt', map_location=device)['model'])  # load weights
-        modelc.to(device).eval()
+    img = torch.zeros((1, 3, img_size, img_size), device=device)  # init img
+    _ = model(img.half() if half else img) if device.type != 'cpu' else None  # run once
 
-    # Set Dataloader
-    vid_path, vid_writer = None, None
-    if webcam:
-        view_img = True
-        cudnn.benchmark = True  # set True to speed up constant image size inference
-        dataset = LoadStreams(source, img_size=imgsz)
-    else:
-        save_img = True
-        dataset = LoadImages(source, img_size=imgsz)
-
-    # Get names and colors
+    # Get names
     names = load_classes(names)
     colors = [[random.randint(0, 255) for _ in range(3)] for _ in range(len(names))]
 
-    # Run inference
-    t0 = time.time()
-    img = torch.zeros((1, 3, imgsz, imgsz), device=device)  # init img
-    _ = model(img.half() if half else img) if device.type != 'cpu' else None  # run once
-    for path, img, im0s, vid_cap in dataset:
-        img = torch.from_numpy(img).to(device)
-        img = img.half() if half else img.float()  # uint8 to fp16/32
-        img /= 255.0  # 0 - 255 to 0.0 - 1.0
-        if img.ndimension() == 3:
-            img = img.unsqueeze(0)
+    # load image
+    img0 = cv2.imread(img_path)  # BGR
+    assert img0 is not None, 'Image Not Found ' + img_path
 
-        # Inference
-        t1 = time_synchronized()
-        pred = model(img, augment=opt.augment)[0]
+    # Padded resize
+    img = letterbox(img0, new_shape=img_size)[0]
 
-        # Apply NMS
-        pred = non_max_suppression(pred, opt.conf_thres, opt.iou_thres, classes=opt.classes, agnostic=opt.agnostic_nms)
-        t2 = time_synchronized()
+    # Convert
+    img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x608x608
+    img = np.ascontiguousarray(img)
 
-        # Apply Classifier
-        if classify:
-            pred = apply_classifier(pred, modelc, img, im0s)
+    # detect
+    img = torch.from_numpy(img).to(device)
+    img = img.half() if half else img.float()  # uint8 to fp16/32
+    img /= 255.0  # 0 - 255 to 0.0 - 1.0
 
-        # category = set()
-        # Process detections
-        for i, det in enumerate(pred):  # detections per image
-            if webcam:  # batch_size >= 1
-                p, s, im0 = path[i], '%g: ' % i, im0s[i].copy()
-            else:
-                p, s, im0 = path, '', im0s
+    if img.ndimension() == 3:
+        img = img.unsqueeze(0)
 
-            save_path = str(Path(out) / Path(p).name)
-            txt_path = str(Path(out) / Path(p).stem) + ('_%g' % dataset.frame if dataset.mode == 'video' else '')
-            s += '%gx%g ' % img.shape[2:]  # print string
-            gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
+    # Inference
+    pred = model(img, augment=augment)[0]
+
+    # Apply NMS
+    pred = non_max_suppression(pred, conf_thres, iou_thres, classes=classes,
+                               agnostic=agnostic_nms)
+
+    # Process detections
+    for i, det in enumerate(pred):
+        if webcam:
+            p, s, im0 = img_path[i], '%g: ' % i, img0[i].copy()  # batch_size >= 1
+        else:
+            p, s, im0 = img_path, '', img0
+
+            # normalization gain whwh
+            gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]
+
             if det is not None and len(det):
                 # Rescale boxes from img_size to im0 size
-                det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
-
-                # Print results
-                for c in det[:, -1].unique():
-                    n = (det[:, -1] == c).sum()  # detections per class
-                    s += '%g %ss, ' % (n, names[int(c)])  # add to string
+                det[:, :4] = scale_coords(img.shape[2:], det[:, :4], img0.shape).round()
 
                 # Write results
                 for *xyxy, conf, cls in det:
-                    # category.add(cls)
-                    if save_txt:  # Write to file
-                        # xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh  # =====================================================================
-                        xywh = (xyxy2xywh2(torch.tensor(xyxy).view(1, 4))).view(-1).tolist()
-                        with open(txt_path + '.txt', 'a') as f:
-                            f.write(('%g ' * 8 + '\n') % (*xywh, conf, (cls + 1), 0, 0))  # label format
+                    xywh = (xyxy2xywh2(torch.tensor(xyxy).view(1, 4))).view(-1).tolist()
+                    with open('./111' + '.txt', 'a') as f:
+                        f.write(('%g ' * 8 + '\n') % (*xywh, conf, (cls + 1), 0, 0))  # label format
 
-                    if save_img or view_img:  # Add bbox to image
-                        # if False:
-                        # label = '%s %.2f' % (names[int(cls)], conf)
-                        # plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=2)
+                    if save_img:  # Add bbox to image
                         plot_one_box(xyxy, im0, label=None, color=colors[int(cls)], line_thickness=2)
             else:
-                with open(txt_path + '.txt', 'a') as f:
+                with open('./111' + '.txt', 'a') as f:
                     f.write(('%g ' * 8 + '\n') % (0, 0, 0, 0, -1, -1, 0, 0))  # label format
-
-            # Print time (inference + NMS)
-            print('%sDone. (%.3fs)' % (s, t2 - t1))
-
-            # Stream results
-            if view_img:
-                cv2.imshow(p, im0)
-                if cv2.waitKey(1) == ord('q'):  # q to quit
-                    raise StopIteration
 
             # Save results (image with detections)
             if save_img:
-                # if False:
-                if dataset.mode == 'images':
-                    cv2.imwrite(save_path, im0)
-                else:
-                    if vid_path != save_path:  # new video
-                        vid_path = save_path
-                        if isinstance(vid_writer, cv2.VideoWriter):
-                            vid_writer.release()  # release previous video writer
+                cv2.imwrite('./111.png', im0)
 
-                        fourcc = 'mp4v'  # output video codec
-                        fps = vid_cap.get(cv2.CAP_PROP_FPS)
-                        w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                        h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                        vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*fourcc), fps, (w, h))
-                    vid_writer.write(im0)
+            # if save_txt or save_img:
+            #     print('Results saved to %s' % Path(out))
+            #     if platform == 'darwin' and not opt.update:  # MacOS
+            #         os.system('open ' + save_path)
 
-    if save_txt or save_img:
-        print('Results saved to %s' % Path(out))
-        if platform == 'darwin' and not opt.update:  # MacOS
-            os.system('open ' + save_path)
-
-    print('Done. (%.3fs)' % (time.time() - t0))
-    # print(category)
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default='./weights/last_prune_0593.pt',
-                        help='model.pt path(s)')
-    parser.add_argument('--cfg', type=str, default='./cfg/295_sparsity_5_prune_0.5_0.5.cfg', help='*.cfg path')
-
-    # parser.add_argument('--source', type=str, default='E:/PythonPrograms/VisDrone-Object-Detection/ODI/trainset/VisDrone2019-DET-train/images', help='source')
-    # parser.add_argument('--source', type=str, default='E:/PythonPrograms/VisDrone-Object-Detection/ODI/valset/VisDrone2019-DET-val/images', help='source')
-    parser.add_argument('--source', type=str,
-                        default='E:/PythonPrograms/VisDrone-Object-Detection/ODI/testset-challenge/VisDrone2019-DET-test/images',
-                        help='source')  # file/folder, 0 for webcam
-
-    parser.add_argument('--output', type=str, default='./output', help='output folder')  # output folder
-    parser.add_argument('--names', type=str, default='data/visDrone.names', help='*.cfg path')
-    parser.add_argument('--img-size', type=int, default=608, help='inference size (pixels)')
-    parser.add_argument('--conf-thres', type=float, default=0.1, help='object confidence threshold')
-    parser.add_argument('--iou-thres', type=float, default=0.1, help='IOU threshold for NMS')
-    parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-    parser.add_argument('--view-img', action='store_true', help='display results')
-    parser.add_argument('--save-txt', default=True, type=bool, help='save results to *.txt')
-    parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 0 2 3')
-    parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
-    parser.add_argument('--augment', action='store_true', help='augmented inference')
-    parser.add_argument('--update', action='store_true', help='update all models')
-    opt = parser.parse_args()
-    print(opt)
-
-    state_dict, optimizer = torch.load(opt.weights)['model'], torch.load(opt.weights)['optimizer']
-
-    with torch.no_grad():
-        if opt.update:  # update all models (to fix SourceChangeWarning)
-            for opt.weights in ['']:
-                detect()
-                strip_optimizer(opt.weights)
-        else:
-            detect()
+if __name__ == "__main__":
+    detect('./cfg/295_sparsity_5_prune_0.5_0.5.cfg',
+           './cfg/t-295-s-5-p-0.5-0.5-ft-500-e-784-f-784.pt',
+           './cfg/visDrone.names',
+           './cfg/0000013_00465_d_0000067.jpg',
+           0)

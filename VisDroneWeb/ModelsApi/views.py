@@ -15,6 +15,7 @@ from ModelsApi.views_constant import HTTP_OK, HTTP_CFG_DELETED_ERROR, \
     HTTP_CFG_UPLOAD_ERROR, HTTP_CFG_NOT_EXIST, HTTP_CFG_GET_ERROR, HTTP_CP_UPLOAD_ERROR, HTTP_CP_GET_ERROR, \
     HTTP_CP_NOT_EXIST
 from VisDroneWeb.settings import IMG_UPLOAD
+from utils import detect
 
 
 class ModelManagement(View):
@@ -99,8 +100,8 @@ class CheckpointManagement(View):
     """model checkpoint file management include upload, deleted, download"""
 
     def __init__(self):
-        self.data = {'msg': 'upload checkpoint success', 'status': HTTP_OK}
         super(CheckpointManagement, self).__init__()
+        self.data = {'msg': 'upload checkpoint success', 'status': HTTP_OK}
 
     def post(self, request):
         """
@@ -178,25 +179,58 @@ class CheckpointManagement(View):
 
 
 class DetectionManagement(View):
+    """images detection management include detect(s)"""
+
+    def __init__(self):
+        super(DetectionManagement, self).__init__()
+        self.data = {'msg': 'error', 'status': HTTP_OK}
+
     def post(self, request):
         """
         upload a image and detected objects
         :param request: image: detected image
         :return:
         """
-        img = request.FILES.get('image')
 
-        name = img.name
+        img = request.FILES.get('image')
+        cfg = request.POST.get('cfg')
+        weight = request.POST.get('weight')
+        names = request.POST.get('names')
+
+        if img is None or cfg is None or weight is None or names is None:
+            self.data['msg'] = 'detected relative config files are None'
+            self.data['results'] = {}
+            return JsonResponse(data=self.data)
+
+        img_name = img.name
 
         # ext = os.path.splitext(name)[-1]
 
-        img_path = os.path.join(IMG_UPLOAD, name)
+        img_path = os.path.join(IMG_UPLOAD, img_name)
 
         with open(img_path, 'ab') as fp:
             for chunk in img.chunks():
                 fp.write(chunk)
 
-        return JsonResponse(data={'msg': 'success'})
+        content = detect.detect(cfg, weight, names, img_path, 0)
+        self.data['results'] = content
+
+        return JsonResponse(data=self.data, status=HTTP_OK)
 
     def get(self, request):
         pass
+
+
+class ClassnameManagement(View):
+    """ detected classname """
+    def __init__(self):
+        super(ClassnameManagement, self).__init__()
+        self.data = {'msg': 'error', 'status': HTTP_OK}
+
+    def post(self, request):
+        cn_number = request.POST.get("id")
+        names_file = request.FILES.get('classname')
+
+        if names_file is None:
+            self.data['msg'] = 'class name file upload error'
+            return JsonResponse(data=self.data)
