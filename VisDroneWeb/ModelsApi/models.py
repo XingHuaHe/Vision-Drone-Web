@@ -26,10 +26,13 @@ class Checkpoint(models.Model):
 
 
 class ClassName(models.Model):
-    """detected class names"""
+    """detected class names. 'cn' represented class name"""
 
     cn_number = models.CharField(max_length=64, unique=True)
     cn_name = models.CharField(max_length=64)
+    ck_path = models.FileField(upload_to='classname', default='classname')
+    ck_time = models.DateTimeField(verbose_name='YYYY-MM-DD HH:MM:ss')
+    cn_model = models.ForeignKey(NetModel)
 
     class Meta:
         db_table = 'VisDrone_ClassName'

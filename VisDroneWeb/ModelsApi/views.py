@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from ModelsApi.models import Checkpoint, NetModel
+from ModelsApi.models import Checkpoint, NetModel, ClassName
 from ModelsApi.views_constant import HTTP_OK, HTTP_CFG_DELETED_ERROR, \
     HTTP_CFG_UPLOAD_ERROR, HTTP_CFG_NOT_EXIST, HTTP_CFG_GET_ERROR, HTTP_CP_UPLOAD_ERROR, HTTP_CP_GET_ERROR, \
     HTTP_CP_NOT_EXIST
@@ -193,9 +193,9 @@ class DetectionManagement(View):
         """
 
         img = request.FILES.get('image')
-        cfg = request.POST.get('cfg')
-        weight = request.POST.get('weight')
-        names = request.POST.get('names')
+        cfg = request.POST.get('cfg_id')
+        weight = request.POST.get('weight_id')
+        names = request.POST.get('classname_id')
 
         if img is None or cfg is None or weight is None or names is None:
             self.data['msg'] = 'detected relative config files are None'
@@ -212,8 +212,20 @@ class DetectionManagement(View):
             for chunk in img.chunks():
                 fp.write(chunk)
 
-        content = detect.detect(cfg, weight, names, img_path, 0)
-        self.data['results'] = content
+        # config file path.
+        netmodel = NetModel.objects.all().filter(nm_number=cfg).first()
+        cfg_path = netmodel.nm_path.path
+        # weight file path.
+        checkpoint = Checkpoint.objects.all().filter(ck_number=weight).first()
+        weight_path = checkpoint.ck_path.path
+        # classname file path
+        classname = ClassName.objects.all().filter(cn_number=names).first()
+        name_path = classname.ck_path.path
+
+        # detect.
+        results = detect.detect(cfg_path, weight_path, name_path, img_path, 0)
+
+        self.data['results'] = str(results.get('prediction'))
 
         return JsonResponse(data=self.data, status=HTTP_OK)
 
@@ -223,14 +235,37 @@ class DetectionManagement(View):
 
 class ClassnameManagement(View):
     """ detected classname """
+
     def __init__(self):
         super(ClassnameManagement, self).__init__()
         self.data = {'msg': 'error', 'status': HTTP_OK}
 
     def post(self, request):
-        cn_number = request.POST.get("id")
-        names_file = request.FILES.get('classname')
+        """
 
-        if names_file is None:
+        :param request: id: net-model config id
+        :param request: classname: class names file
+        :return:
+        """
+        nm_number = request.POST.get("id")
+        file = request.FILES.get('classname')
+
+        if file is None:
             self.data['msg'] = 'class name file upload error'
             return JsonResponse(data=self.data)
+
+        try:
+            classname = ClassName()
+            classname.cn_number = time.ctime()
+            classname.cn_name = file.name
+            classname.ck_path = file
+            classname.ck_time = datetime.datetime.now()
+            classname.cn_model = NetModel.objects.all().filter(nm_number=nm_number).first()
+            classname.save()
+
+            self.data['msg'] = 'classname file uploaded success'
+
+        except RuntimeError as e:
+            self.data['msg'] = e
+
+        return JsonResponse(data=self.data)

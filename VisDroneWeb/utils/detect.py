@@ -1,22 +1,13 @@
-import os
-import argparse
-from pathlib import Path
 from typing import List, Dict
 
 import cv2
-from numpy import random
 import torch
 import torch.backends.cudnn as cudnn
 
-from utils.models.experimental import attempt_load
-from utils.datasets import LoadStreams, LoadImages
-from utils.general import (check_img_size, non_max_suppression, apply_classifier, scale_coords, xyxy2xywh, plot_one_box, strip_optimizer)
-from utils.torch_utils import select_device, load_classifier, time_synchronized
-
-from models.models import *
-from models.experimental import *
-from utils.datasets import *
-from utils.general import *
+from utils.utils.torch_utils import select_device
+from utils.models.models import *
+from utils.utils.datasets import *
+from utils.utils.general import *
 
 
 def load_classes(path: str) -> List:
@@ -26,26 +17,27 @@ def load_classes(path: str) -> List:
     return list(filter(None, names))  # filter removes empty strings (such as last line)
 
 
-#     parser.add_argument('--weights', nargs='+', type=str, default='./weights/last_prune_0593.pt',
-#                         help='model.pt path(s)')
-#     parser.add_argument('--cfg', type=str, default='./cfg/295_sparsity_5_prune_0.5_0.5.cfg', help='*.cfg path')
-#     parser.add_argument('--output', type=str, default='./output', help='output folder')  # output folder
-#     parser.add_argument('--names', type=str, default='data/visDrone.names', help='*.cfg path')
-#     parser.add_argument('--img-size', type=int, default=608, help='inference size (pixels)')
-#     parser.add_argument('--conf-thres', type=float, default=0.1, help='object confidence threshold')
-#     parser.add_argument('--iou-thres', type=float, default=0.1, help='IOU threshold for NMS')
-#     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-#     parser.add_argument('--view-img', action='store_true', help='display results')
-#     parser.add_argument('--save-txt', default=True, type=bool, help='save results to *.txt')
-#     parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 0 2 3')
-#     parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
-#     parser.add_argument('--augment', action='store_true', help='augmented inference')
-#     parser.add_argument('--update', action='store_true', help='update all models')
+def detect(cfg, weight, names: str, image: str, classes: int, augment: bool = False, agnostic_nms: bool = False,
+           device: str = '', img_size: int = 608, conf_thres: int = 0.1, iou_thres: int = 0.1, save_img: bool = True,
+           webcam: bool = False) -> Dict:
+    """
 
-def detect(cfg, weight, names: str, img_path, classes: int, augment: bool = False, agnostic_nms: bool = False, device: str = '',
-           img_size: int = 608, conf_thres: int = 0.1, iou_thres: int = 0.1,
-           save_img: bool = True, webcam: bool = False) -> Dict:
-           
+    :param cfg: model config file(*.cfg) path
+    :param weight: model checkpoint file(*.pt) path
+    :param names: class name file(*.names) path
+    :param image: detected image path
+    :param classes: filter by class: --class 0, or --class 0 2 3
+    :param augment: augmented inference
+    :param agnostic_nms: class-agnostic NMS
+    :param device: cuda device, i.e. 0 or 0,1,2,3 or cpu(default '' -> cpu)
+    :param img_size: inference size or image size (pixels)
+    :param conf_thres: object confidence threshold, default = 0.1
+    :param iou_thres: IOU threshold for NMS, default = 0.1
+    :param save_img: whether to save image, default = False
+    :param webcam:
+    :return:
+    """
+
     # select device (cpu or cuda)
     device = select_device(device)
 
@@ -60,28 +52,24 @@ def detect(cfg, weight, names: str, img_path, classes: int, augment: bool = Fals
         state_dict = torch.load(weight, map_location=device)['model']
         model.load_state_dict(state_dict)
     except TypeError as e:
+        print(e)
         model.load_state_dict(torch.load(weight, map_location=device))
 
     model.to(device).eval()
     if half:
         model.half()  # to FP16
 
-    img = torch.zeros((1, 3, img_size, img_size), device=device)  # init img
-    _ = model(img.half() if half else img) if device.type != 'cpu' else None  # run once
-
     # Get names
     names = load_classes(names)
-    colors = [[random.randint(0, 255) for _ in range(3)] for _ in range(len(names))]
 
-    # load image
-    img0 = cv2.imread(img_path)  # BGR
-    assert img0 is not None, 'Image Not Found ' + img_path
+    # load image(BGR)
+    img0 = cv2.imread(image)
 
     # Padded resize
     img = letterbox(img0, new_shape=img_size)[0]
 
-    # Convert
-    img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x608x608
+    # Convert (BGR to RGB)
+    img = img[:, :, ::-1].transpose(2, 0, 1)
     img = np.ascontiguousarray(img)
 
     # detect
@@ -100,39 +88,23 @@ def detect(cfg, weight, names: str, img_path, classes: int, augment: bool = Fals
                                agnostic=agnostic_nms)
 
     # Process detections
+    results = {'names': names}
     for i, det in enumerate(pred):
-        if webcam:
-            p, s, im0 = img_path[i], '%g: ' % i, img0[i].copy()  # batch_size >= 1
+        results['prediction'] = []
+        if det is not None and len(det):
+            # Rescale boxes from img_size to im0 size
+            det[:, :4] = scale_coords(img.shape[2:], det[:, :4], img0.shape).round()
+
+            # Write results
+            for *xyxy, conf, cls in det:
+                xywh = (xyxy2xywh2(torch.tensor(xyxy).view(1, 4))).view(-1).tolist()
+                results['prediction'].append((*xywh, conf.data.item(), cls.data.item() + 1, 0, 0))
+
+            return results
         else:
-            p, s, im0 = img_path, '', img0
+            results['prediction'].append((0, 0, 0, 0, -1, -1, 0, 0))
+            return results
 
-            # normalization gain whwh
-            gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]
-
-            if det is not None and len(det):
-                # Rescale boxes from img_size to im0 size
-                det[:, :4] = scale_coords(img.shape[2:], det[:, :4], img0.shape).round()
-
-                # Write results
-                for *xyxy, conf, cls in det:
-                    xywh = (xyxy2xywh2(torch.tensor(xyxy).view(1, 4))).view(-1).tolist()
-                    with open('./111' + '.txt', 'a') as f:
-                        f.write(('%g ' * 8 + '\n') % (*xywh, conf, (cls + 1), 0, 0))  # label format
-
-                    if save_img:  # Add bbox to image
-                        plot_one_box(xyxy, im0, label=None, color=colors[int(cls)], line_thickness=2)
-            else:
-                with open('./111' + '.txt', 'a') as f:
-                    f.write(('%g ' * 8 + '\n') % (0, 0, 0, 0, -1, -1, 0, 0))  # label format
-
-            # Save results (image with detections)
-            if save_img:
-                cv2.imwrite('./111.png', im0)
-
-            # if save_txt or save_img:
-            #     print('Results saved to %s' % Path(out))
-            #     if platform == 'darwin' and not opt.update:  # MacOS
-            #         os.system('open ' + save_path)
 
 if __name__ == "__main__":
     detect('./cfg/295_sparsity_5_prune_0.5_0.5.cfg',
